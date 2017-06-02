@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import json
+import sys
 import codecs
 import chardet
 from math import cos, asin, sqrt
@@ -13,29 +14,20 @@ def get_encoding(filename: "str") -> "str":  # identify the name of encoding of 
 
 
 def load_data(filename: "str") -> "dict":
-    try:
-        json_data = json.load(codecs.open(filename, 'r', get_encoding(filename)))
-    except IOError:
-        print("io error during loading bar's data")
-        exit(1)
-    except json.decoder.JSONDecodeError:
-        print("invalid json format in bar's data")
-        exit(2)
-    else:
-        return json_data
+    return json.load(codecs.open(filename, 'r', get_encoding(filename)))
 
 
 def get_biggest_bar(bars_data: "dict") -> "tuple":
-    bars_sits = [(i, bar['SeatsCount']) for i, bar in enumerate(bars_data)]
-    index = max(bars_sits, key=lambda t: t[1])[0]
-    return bars_data[index], index
+    bars_sits = [(bar_id, bar['SeatsCount']) for bar_id, bar in enumerate(bars_data)]
+    bar_id = max(bars_sits, key=lambda bar_data: bar_data[1])[0]
+    return bars_data[bar_id], bar_id
 
 
 def get_smallest_bar(bars_data: "dict") -> "tuple":
     #  we assume that if number of sits is less than 5 its an error in source data of the bar
-    bars_sits = [(i, bar['SeatsCount']) for i, bar in enumerate(bars_data) if bar['SeatsCount'] >= 5]
-    index = min(bars_sits, key=lambda t: t[1])[0]
-    return bars_data[index], index
+    bars_sits = [(bar_id, bar['SeatsCount']) for bar_id, bar in enumerate(bars_data) if bar['SeatsCount'] >= 5]
+    bar_id = min(bars_sits, key=lambda bar_data: bar_data[1])[0]
+    return bars_data[bar_id], bar_id
 
 
 def haversine_distance(lat1: "float", lon1: "float", lat2: "float", lon2: "float") -> "float":
@@ -46,10 +38,11 @@ def haversine_distance(lat1: "float", lon1: "float", lat2: "float", lon2: "float
 
 
 def get_closest_bar(bars_data: "dict", lat: "float", lon: "float") -> "tuple":
-    bars_distances = [(i, haversine_distance(lat, lon, float(bar['Latitude_WGS84']), float(bar['Longitude_WGS84'])))
-                      for i, bar in enumerate(bars_data)]
-    index = min(bars_distances, key=lambda t: t[1])[0]
-    return bars_data[index], index, bars_distances
+    bars_distances = [
+        (bar_id, haversine_distance(lat, lon, float(bar['Latitude_WGS84']), float(bar['Longitude_WGS84'])))
+        for bar_id, bar in enumerate(bars_data)]
+    bar_id = min(bars_distances, key=lambda bar_data: bar_data[1])[0]
+    return bars_data[bar_id], bar_id, bars_distances
 
 
 def main(lat, lon, all_bars_in_moscow):
@@ -71,7 +64,7 @@ def main(lat, lon, all_bars_in_moscow):
 
 
 if __name__ == '__main__':
-    moscow_bars_data = load_data('moscow_bars.json')
+    moscow_bars_data = load_data(sys.argv[1:][0])
     lati = float(input("enter latitude  in rad format: "))
     long = float(input("enter longitude in rad format: "))
     main(lati, long, moscow_bars_data)
