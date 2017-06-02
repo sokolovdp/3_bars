@@ -1,0 +1,6 @@
+#all directorie to ignore
+**/
+
+# test files
+*.json
+*.txt

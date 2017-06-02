@@ -1,18 +1,22 @@
 # Ближайшие бары
 
-[FIXME. Здесь будет описание проекта]
+bars.py - выдает расстояние до самого маленького, самого большого и ближайшего баров в Москве
 
 # Как запустить
 
-Скрипт требует для своей работы установленного интерпретатора Python версии 3.5
+Скрипт требует для своей работы установленного интерпретатора Python версии 3.6
 
 Запуск на Linux:
 
 ```#!bash
 
-$ python bars.py # possibly requires call of python3 executive instead of just python
-# FIXME вывести пример ответа скрипта
+$ python3 bars.py 
 
+enter latitude  in rad format: 37.777777
+enter longitude in rad format: 55.666666
+smallest bar in Moscow  is Бар «Витамин» it's 2425.28 kms from your coordinates
+biggest bar in Moscow  is Спорт бар «Красная машина» it's 2404.83 kms from your coordinates
+closest bar in Moscow  is Бар Виват it's 2389.28 kms from your coordinates
 ```
 
 Запуск на Windows происходит аналогично.
