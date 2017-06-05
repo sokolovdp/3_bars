@@ -1,20 +1,26 @@
-#!/usr/bin/python3
-
 import json
 import sys
-import codecs
 import chardet
-from math import cos, asin, sqrt
+import os
+from math import cos, asin, sqrt, hypot
 
 
-def get_encoding(filename: "str") -> "str":  # identify the name of encoding of the given file
+def load_raw_data_and_encoding_name(filename: "str") -> "tuple":
     with open(filename, "rb") as file:
         raw_data = file.read()
-    return chardet.detect(raw_data)['encoding']
+    return raw_data, chardet.detect(raw_data)['encoding']
 
 
-def load_data(filename: "str") -> "dict":
-    return json.load(codecs.open(filename, 'r', get_encoding(filename)))
+def load_json_data(filename: "str") -> "dict":
+    raw_data, encoding = load_raw_data_and_encoding_name(filename)
+    decoded_data = raw_data.decode(encoding)
+    try:
+        json_data = json.loads(decoded_data)
+    except json.decoder.JSONDecodeError:
+        print("file {} contains invalid json data, print stopped".format(filename))
+        exit(1)
+    else:
+        return json_data
 
 
 def get_biggest_bar(bars_data: "dict") -> "tuple":
@@ -31,15 +37,20 @@ def get_smallest_bar(bars_data: "dict") -> "tuple":
 
 
 def haversine_distance(lat1: "float", lon1: "float", lat2: "float", lon2: "float") -> "float":
-    # calculates distance in km, using the 'Haversine' formula
+    # calculates distance in km, using the optimized 'Haversine' formula
     p = 0.017453292519943295  # Pi/180
     a = 0.5 - cos((lat2 - lat1) * p) / 2 + cos(lat1 * p) * cos(lat2 * p) * (1 - cos((lon2 - lon1) * p)) / 2
     return 12742 * asin(sqrt(a))  # 2*Earth Radius*asin...
 
 
+def euclidean_distance(lat1: "float", lon1: "float", lat2: "float", lon2: "float") -> "float":
+    # calculates distance in km, using the Euclidean distance formula
+    return hypot(lat1 - lat2, lon1 - lon2) * 100
+
+
 def get_closest_bar(bars_data: "dict", lat: "float", lon: "float") -> "tuple":
     bars_distances = [
-        (bar_id, haversine_distance(lat, lon, float(bar['Latitude_WGS84']), float(bar['Longitude_WGS84'])))
+        (bar_id, euclidean_distance(lat, lon, float(bar['Latitude_WGS84']), float(bar['Longitude_WGS84'])))
         for bar_id, bar in enumerate(bars_data)]
     bar_id = min(bars_distances, key=lambda bar_data: bar_data[1])[0]
     return bars_data[bar_id], bar_id, bars_distances
@@ -64,7 +75,9 @@ def main(lat, lon, all_bars_in_moscow):
 
 
 if __name__ == '__main__':
-    moscow_bars_data = load_data(sys.argv[1:][0])
-    lati = float(input("enter latitude  in rad format: "))
-    long = float(input("enter longitude in rad format: "))
-    main(lati, long, moscow_bars_data)
+    if os.path.isfile(sys.argv[1:][0]):
+        latitude = float(input("enter latitude  in rad format: "))
+        longitude = float(input("enter longitude in rad format: "))
+        main(latitude, longitude, load_json_data(sys.argv[1:][0]))
+    else:
+        print("invalid path or file name: {}".format(sys.argv[1:][0]))
