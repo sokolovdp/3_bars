@@ -5,15 +5,15 @@ import os
 from math import cos, asin, sqrt, hypot
 
 
-def load_raw_data_and_encoding_name(filename: "str") -> "tuple":
+def load_decoded_data_and_encoding(filename: "str") -> "tuple":
     with open(filename, "rb") as file:
         raw_data = file.read()
-    return raw_data, chardet.detect(raw_data)['encoding']
+    encoding = chardet.detect(raw_data)['encoding']
+    return raw_data.decode(encoding), encoding
 
 
 def load_json_data(filename: "str") -> "dict":
-    raw_data, encoding = load_raw_data_and_encoding_name(filename)
-    decoded_data = raw_data.decode(encoding)
+    decoded_data, _ = load_decoded_data_and_encoding(filename)
     try:
         json_data = json.loads(decoded_data)
     except json.decoder.JSONDecodeError:
