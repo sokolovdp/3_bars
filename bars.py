@@ -17,7 +17,7 @@ def load_json_data(filename: "str") -> "dict":
     try:
         json_data = json.loads(decoded_data)
     except json.decoder.JSONDecodeError:
-        print("file {} contains invalid json data, print stopped".format(filename))
+        print("file {} contains invalid json data, load aborted".format(filename))
         exit(1)
     else:
         return json_data
