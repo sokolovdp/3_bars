@@ -5,22 +5,18 @@ import os
 from math import hypot
 
 
-def load_decoded_data_and_encoding(filename: "str") -> "tuple":
+def load_decoded_data_and_encoding(filename: "str") -> "str":
     with open(filename, "rb") as file:
         raw_data = file.read()
     encoding = chardet.detect(raw_data)['encoding']
-    return raw_data.decode(encoding), encoding
+    return raw_data.decode(encoding)
 
 
 def load_json_data(filename: "str") -> "dict":
-    decoded_data, _ = load_decoded_data_and_encoding(filename)
     try:
-        json_data = json.loads(decoded_data)
+        return json.loads(load_decoded_data_and_encoding(filename))
     except json.decoder.JSONDecodeError:
         print("file {} contains invalid json data, load aborted!".format(filename))
-        exit(1)
-    else:
-        return json_data
 
 
 def get_biggest_bar(bars_data: "dict") -> "tuple":
@@ -55,22 +51,22 @@ def main(lat, lon, all_bars_in_moscow):
     biggest_bar, biggest_bar_id = get_biggest_bar(all_bars_in_moscow)
 
     print("smallest bar in Moscow is {} it's {:.2f} kms from your coordinates".format(smallest_bar['Name'],
-                                                                                       bars_distances[smallest_bar_id][
-                                                                                           1]))
+                                                                                      bars_distances[smallest_bar_id][
+                                                                                          1]))
 
     print("biggest bar in Moscow is {} it's {:.2f} kms from your coordinates".format(biggest_bar['Name'],
-                                                                                      bars_distances[biggest_bar_id][
-                                                                                          1]))
+                                                                                     bars_distances[biggest_bar_id][
+                                                                                         1]))
 
     print("closest bar in Moscow is {} it's {:.2f} kms from your coordinates".format(closest_bar['Name'],
-                                                                                      bars_distances[closest_bar_id][
-                                                                                          1]))
+                                                                                     bars_distances[closest_bar_id][
+                                                                                         1]))
 
 
 if __name__ == '__main__':
-    if os.path.isfile(sys.argv[1:][0]):
+    if os.path.isfile(sys.argv[1]):
         latitude = float(input("enter latitude  in rad format: "))
         longitude = float(input("enter longitude in rad format: "))
-        main(latitude, longitude, load_json_data(sys.argv[1:][0]))
+        main(latitude, longitude, load_json_data(sys.argv[1]))
     else:
-        print("invalid path or file name: {}".format(sys.argv[1:][0]))
+        print("invalid path or file name: {}".format(sys.argv[1]))
