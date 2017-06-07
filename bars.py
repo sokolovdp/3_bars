@@ -2,7 +2,7 @@ import json
 import sys
 import chardet
 import os
-from math import cos, asin, sqrt, hypot
+from math import hypot
 
 
 def load_decoded_data_and_encoding(filename: "str") -> "tuple":
@@ -34,13 +34,6 @@ def get_smallest_bar(bars_data: "dict") -> "tuple":
     bars_sits = [(bar_id, bar['SeatsCount']) for bar_id, bar in enumerate(bars_data) if bar['SeatsCount'] >= 5]
     bar_id = min(bars_sits, key=lambda bar_data: bar_data[1])[0]
     return bars_data[bar_id], bar_id
-
-
-def haversine_distance(lat1: "float", lon1: "float", lat2: "float", lon2: "float") -> "float":
-    # calculates distance in km, using the optimized 'Haversine' formula
-    p = 0.017453292519943295  # Pi/180
-    a = 0.5 - cos((lat2 - lat1) * p) / 2 + cos(lat1 * p) * cos(lat2 * p) * (1 - cos((lon2 - lon1) * p)) / 2
-    return 12742 * asin(sqrt(a))  # 2*Earth Radius*asin...
 
 
 def euclidean_distance(lat1: "float", lon1: "float", lat2: "float", lon2: "float") -> "float":
