@@ -54,15 +54,15 @@ def main(lat, lon, all_bars_in_moscow):
     smallest_bar, smallest_bar_id = get_smallest_bar(all_bars_in_moscow)
     biggest_bar, biggest_bar_id = get_biggest_bar(all_bars_in_moscow)
 
-    print("smallest bar in Moscow  is {} it's {:.2f} kms from your coordinates".format(smallest_bar['Name'],
+    print("smallest bar in Moscow is {} it's {:.2f} kms from your coordinates".format(smallest_bar['Name'],
                                                                                        bars_distances[smallest_bar_id][
                                                                                            1]))
 
-    print("biggest bar in Moscow  is {} it's {:.2f} kms from your coordinates".format(biggest_bar['Name'],
+    print("biggest bar in Moscow is {} it's {:.2f} kms from your coordinates".format(biggest_bar['Name'],
                                                                                       bars_distances[biggest_bar_id][
                                                                                           1]))
 
-    print("closest bar in Moscow  is {} it's {:.2f} kms from your coordinates".format(closest_bar['Name'],
+    print("closest bar in Moscow is {} it's {:.2f} kms from your coordinates".format(closest_bar['Name'],
                                                                                       bars_distances[closest_bar_id][
                                                                                           1]))
 
